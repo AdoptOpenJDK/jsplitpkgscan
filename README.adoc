@@ -1,0 +1,32 @@
+= OpenJDK proposals
+Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
+:project-full-path: reinhapa/jsplitpkgscan
+:github-branch: master
+
+image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2,
+with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
+
+This project contains a proposal for a split package scanner tool http://openjdk.java.net[OpenJDK].
+
+== Build and run
+To build the tool you need to have a actual OpenJDK 9 build that you can get from https://jdk9.java.net[here].
+
+To build use:
+
+[source, bash]
+----
+./gradlew clean build
+----
+
+After the build was sucessful you can now start it using:
+
+[source, bash]
+----
+java -p build/libs -m splitpkg/jdk.ListPackages
+----
+
+== Contribute
+Contributions are always welcome.
+
+== License
+This project is licensed under the https://github.com/{project-full-path}/blob/{github-branch}/LICENSE[GNU General Public License, version 2 with the Classpath Exception]

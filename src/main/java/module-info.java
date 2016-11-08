@@ -1,0 +1,3 @@
+module splitpkg {
+	exports jdk;
+}
