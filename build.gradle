@@ -2,3 +2,20 @@ apply plugin: 'application'
 apply plugin: 'java'
 
 mainClassName = 'jdk.Main'
+
+jar.manifest {
+    attributes 'Main-Class' : mainClassName
+}
+
+jar.doLast {
+	// temporary work around to enable main class
+	// using the jar executable
+    Exec jarTask = task(jarTask, type: Exec)
+    jarTask.commandLine  'jar',
+                         '--update',
+                         '--main-class',
+                         mainClassName,
+                         '--file',
+                         jar.archivePath
+    jarTask.execute()
+}

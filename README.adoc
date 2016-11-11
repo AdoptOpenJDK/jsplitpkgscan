@@ -22,7 +22,7 @@ After the build was sucessful you can now start it using:
 
 [source, bash]
 ----
-java -p build/libs -m splitpkg/jdk.Main
+java -p build/libs -m jsplitpkg
 ----
 
 == Contribute

@@ -1,3 +1,3 @@
-module splitpkg {
+module jsplitpkg {
 	exports jdk;
 }
