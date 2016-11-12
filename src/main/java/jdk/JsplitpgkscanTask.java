@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class JsplitpgkscanTask {
 
@@ -79,10 +80,12 @@ class JsplitpgkscanTask {
                         if (argIt.hasNext()) {
                             Path p = Paths.get(argIt.next());
                             if (Files.exists(p) && Files.isRegularFile(p)) {
-                                Files.lines(p)
-                                    .map(Paths::get)
-                                    .forEach(this::addAnalyzer);
-                                continue;
+                                try (Stream<String> lines = Files.lines(p)) {
+                                    lines
+                                        .map(Paths::get)
+                                        .forEach(this::addAnalyzer);
+                                    continue;
+                                }
                             }
                         }
                         options.help = true;
@@ -92,9 +95,10 @@ class JsplitpgkscanTask {
                         if (argIt.hasNext()) {
                             Path p = Paths.get(argIt.next());
                             if (Files.isDirectory(p)) {
-                                Files.list(p)
-                                    .forEach(this::addAnalyzer);
-                                continue;
+                                try (Stream<Path> list = Files.list(p)) {
+                                    list.forEach(this::addAnalyzer);
+                                    continue;
+                                }
                             }
                         }                    
                         options.help = true;
