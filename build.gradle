@@ -3,6 +3,7 @@ apply plugin: 'java'
 
 mainClassName = 'jdk.Main'
 
+
 jar.manifest {
     attributes 'Main-Class' : mainClassName
 }
@@ -11,7 +12,7 @@ jar.doLast {
 	// temporary work around to enable main class
 	// using the jar executable
     Exec jarTask = task(jarTask, type: Exec)
-    jarTask.commandLine  'jar',
+    jarTask.commandLine  System.env.JAVA_HOME + '/bin/jar',
                          '--update',
                          '--main-class',
                          mainClassName,
