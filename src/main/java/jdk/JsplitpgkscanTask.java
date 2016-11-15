@@ -163,17 +163,17 @@ class JsplitpgkscanTask {
             .collect(Collectors.toList());
 
         if (!splitPkgs.isEmpty()) {
-            System.out.println("- Split packages:");
+            log.println("- Split packages:");
             splitPkgs.forEach(e -> {
-                System.out.println(e.getKey());
+                log.println(e.getKey());
                 e.getValue().stream()
                     .map(ListPackages::location)
-                    .forEach(location -> System.out.format("    %s%n", location));
+                    .forEach(location -> log.format("    %s%n", location));
             });
         }
 
         if (options.all) {
-            System.out.println("- All packages:");
+            log.println("- All packages:");
             for (ListPackages analyzer : options.analyzers) {
                 List<String> allPkgs = analyzer.packages()
                     .stream()
@@ -181,8 +181,8 @@ class JsplitpgkscanTask {
                     .sorted()
                     .collect(Collectors.toList());
                 if (!allPkgs.isEmpty()) {
-                    System.out.println(analyzer.location());
-                    allPkgs.forEach(p -> System.out.format("   %s%n", p));
+                    log.println(analyzer.location());
+                    allPkgs.forEach(p -> log.format("   %s%n", p));
                 }
             }
         }
