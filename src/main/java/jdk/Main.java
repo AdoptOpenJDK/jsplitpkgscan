@@ -4,9 +4,15 @@ import java.io.PrintWriter;
 
 public class Main {
 
+    /**
+     * Default main entry point used as main class. At the end of the analyzing
+     * run, the {@link System.exit()} is being called.
+     *
+     * @param args command line arguments
+     */
     public static void main(String... args) throws Exception {
-        JsplitpgkscanTask t = new JsplitpgkscanTask();
-        int rc = t.run(args);
+        JsplitpgkscanTask task = new JsplitpgkscanTask();
+        int rc = task.run(args);
         System.exit(rc);
     }
 
@@ -18,8 +24,8 @@ public class Main {
      * @return an exit code. 0 means success, non-zero means an error occurred.
      */
     public static int run(String[] args, PrintWriter out) {
-        JsplitpgkscanTask t = new JsplitpgkscanTask();
-        t.setLog(out);
-        return t.run(args);
+        JsplitpgkscanTask task = new JsplitpgkscanTask();
+        task.setLog(out);
+        return task.run(args);
     }
 }
