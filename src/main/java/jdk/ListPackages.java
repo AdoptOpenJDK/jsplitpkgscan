@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * Lists the packages of the given JAR file or exploded directory
  * and reports the list of split packages
  */
-public class ListPackages {
+class ListPackages {
     private static final String MODULE_INFO = "module-info.class";
 
     private final URI location;

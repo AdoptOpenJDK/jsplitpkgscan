@@ -2,7 +2,8 @@ apply plugin: 'application'
 apply plugin: 'java'
 
 mainClassName = 'jdk.Main'
-
+sourceCompatibility = 9
+targetCompatibility = 9
 
 jar.manifest {
     attributes 'Main-Class' : mainClassName
