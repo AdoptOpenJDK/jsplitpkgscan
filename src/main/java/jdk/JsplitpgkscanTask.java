@@ -86,16 +86,16 @@ class JsplitpgkscanTask {
         log = out;
     }
 
-    int run(String... args) {
+    int run(String... arguments) {
         if (log == null) {
             log = new PrintWriter(System.out);
         }
         int rc = 0;
         try { 
-            options.help = args.length == 0;
-            for (Iterator<String> argIt = Arrays.asList(args).iterator(); argIt.hasNext(); ) {
-                String arg  = argIt.next();
-                switch (arg) {
+            options.help = arguments.length == 0;
+            for (Iterator<String> argIt = Arrays.asList(arguments).iterator(); argIt.hasNext(); ) {
+                String argument  = argIt.next();
+                switch (argument) {
                     case "-?":
                     case "-h":
                     case "--help":
@@ -141,12 +141,12 @@ class JsplitpgkscanTask {
                         rc = 1;
                         break;
                     default:
-                        if (arg.startsWith("-")) {
+                        if (argument.startsWith("-")) {
                             options.help = true;
                             rc = 1;
                             break;
                         }
-                        addAnalyzer(Paths.get(arg));
+                        addAnalyzer(Paths.get(argument));
                 }
             }
             if (options.help) {
@@ -167,31 +167,31 @@ class JsplitpgkscanTask {
 
         Map<String, ListPackages> packageToModule = ListPackages.packageToModule();
 
-        Map<String, List<ListPackages>> pkgs = new HashMap<>();
+        Map<String, List<ListPackages>> packages = new HashMap<>();
         for (ListPackages analyzer : options.analyzers) {
             analyzer.packages().stream()
-                    .forEach(pn -> {
+                    .forEach(packageName -> {
                         List<ListPackages> values =
-                            pkgs.computeIfAbsent(pn, k -> new ArrayList<>());
+                            packages.computeIfAbsent(packageName, key -> new ArrayList<>());
                         values.add(analyzer);
-                        if (packageToModule.containsKey(pn)) {
-                            values.add(packageToModule.get(pn));
+                        if (packageToModule.containsKey(packageName)) {
+                            values.add(packageToModule.get(packageName));
                         }
                     });
         }
 
-        List<Map.Entry<String, List<ListPackages>>> splitPkgs = pkgs.entrySet()
+        List<Map.Entry<String, List<ListPackages>>> splitPkgs = packages.entrySet()
             .stream()
-            .filter(e -> e.getValue().size() > 1)
-            .filter(e -> e.getKey().startsWith(options.packageArg))
+            .filter(element -> element.getValue().size() > 1)
+            .filter(element -> element.getKey().startsWith(options.packageArg))
             .sorted(Map.Entry.comparingByKey())
             .collect(Collectors.toList());
 
         if (!splitPkgs.isEmpty()) {
             log.println("- Split packages:");
-            splitPkgs.forEach(e -> {
-                log.println(e.getKey());
-                e.getValue().stream()
+            splitPkgs.forEach(element -> {
+                log.println(element.getKey()); // the package name
+                element.getValue().stream()
                     .map(ListPackages::location)
                     .forEach(location -> log.format("    %s%n", location));
             });
@@ -202,20 +202,20 @@ class JsplitpgkscanTask {
             for (ListPackages analyzer : options.analyzers) {
                 List<String> allPkgs = analyzer.packages()
                     .stream()
-                    .filter(e -> e.startsWith(options.packageArg))
+                    .filter(element -> element.startsWith(options.packageArg))
                     .sorted()
                     .collect(Collectors.toList());
                 if (!allPkgs.isEmpty()) {
                     log.println(analyzer.location());
-                    allPkgs.forEach(p -> log.format("   %s%n", p));
+                    allPkgs.forEach(packageName -> log.format("   %s%n", packageName));
                 }
             }
         }
     }
 
-    private String getMessage(String key, Object... args) {
+    private String getMessage(String key, Object... arguments) {
         try {
-            return MessageFormat.format(ResourceBundleHelper.bundle.getString(key), args);
+            return MessageFormat.format(ResourceBundleHelper.bundle.getString(key), arguments);
         } catch (MissingResourceException e) {
             throw new InternalError("Missing message: " + key);
         }

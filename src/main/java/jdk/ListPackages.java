@@ -84,7 +84,7 @@ class ListPackages {
                 .map(Path::getParent)
                 .map(dir::relativize)
                 .map(Path::toString)
-                .map(p -> p.replace(File.separator, "."))
+                .map(pathName -> pathName.replace(File.separator, "."))
                 .map(ListPackages::specialCaseTranslator)
                 .collect(Collectors.toSet());
         } catch (IOException e) {
@@ -99,7 +99,7 @@ class ListPackages {
         try (JarFile jf = new JarFile(path.toFile())) {
             return jf.stream()
                 .map(JarEntry::getName)
-                .filter(n -> n.endsWith(".class") && !n.equals(MODULE_INFO))
+                .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
                 .map(ListPackages::toPackage)
                 .map(ListPackages::specialCaseTranslator)
                 .collect(Collectors.toSet());
@@ -112,8 +112,8 @@ class ListPackages {
         Map<String, ListPackages> map = new HashMap<>();
         ModuleFinder.ofSystem().findAll()
             .stream()
-            .map(mref -> new ListPackages(mref))
-            .forEach(o -> o.packages().forEach(pn -> map.put(pn, o)));
+            .map(moduleReference -> new ListPackages(moduleReference))
+            .forEach(listPackages -> listPackages.packages().forEach(packageName -> map.put(packageName, listPackages)));
         return map;
     }
 
