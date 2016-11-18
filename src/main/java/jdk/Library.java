@@ -28,7 +28,6 @@ package jdk;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
 import java.net.URI;
@@ -46,26 +45,36 @@ import java.util.stream.Collectors;
  * Lists the packages of the given JAR file or exploded directory
  * and reports the list of split packages
  */
-class ListPackages {
+class Library {
     private static final String MODULE_INFO = "module-info.class";
 
     private final URI location;
     private final Set<String> packages;
 
-    ListPackages(Path path, Function<Path, Set<String>> pkgFunction) throws IOException {
+    Library(Path path, Function<Path, Set<String>> pkgFunction) throws IOException {
         this.location = path.toUri();
         this.packages = pkgFunction.apply(path);
     }
 
-    private ListPackages(ModuleReference mref) {
+    private Library(ModuleReference mref) {
         this.location = mref.location().get();
         this.packages = mref.descriptor().packages();
     }
 
+    /**
+     * Returns a set of all packages within this library.
+     *
+     * @return the package names contained in this library
+     */
     Set<String> packages() {
         return packages;
     }
 
+    /**
+     * Returns the location {@link URI} of this library
+     *
+     * @return the library location
+     */
     URI location() {
         return location;
     }
@@ -85,7 +94,7 @@ class ListPackages {
                 .map(dir::relativize)
                 .map(Path::toString)
                 .map(pathName -> pathName.replace(File.separator, "."))
-                .map(ListPackages::specialCaseTranslator)
+                .map(Library::specialCaseTranslator)
                 .collect(Collectors.toSet());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -100,20 +109,20 @@ class ListPackages {
             return jf.stream()
                 .map(JarEntry::getName)
                 .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
-                .map(ListPackages::toPackage)
-                .map(ListPackages::specialCaseTranslator)
+                .map(Library::toPackage)
+                .map(Library::specialCaseTranslator)
                 .collect(Collectors.toSet());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    static Map<String, ListPackages> packageToModule() {
-        Map<String, ListPackages> map = new HashMap<>();
+    static Map<String, Library> packageToModule() {
+        Map<String, Library> map = new HashMap<>();
         ModuleFinder.ofSystem().findAll()
             .stream()
-            .map(moduleReference -> new ListPackages(moduleReference))
-            .forEach(listPackages -> listPackages.packages().forEach(packageName -> map.put(packageName, listPackages)));
+            .map(moduleReference -> new Library(moduleReference))
+            .forEach(library -> library.packages().forEach(packageName -> map.put(packageName, library)));
         return map;
     }
 
