@@ -219,7 +219,7 @@ class JsplitpgkscanTask {
                             options.dotOutputDirectory = dotOutputDirectory;
                             continue;
                         }
-                        throw new BadArgs("err.invalid.path", dotOutputDirectory);
+                        throw new BadArgs("err.missing.outputdir", dotOutputDirectory);
                     }
                     throw new BadArgs("err.missing.arg", argument);
                 default:
