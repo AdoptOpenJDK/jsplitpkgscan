@@ -15,7 +15,6 @@
   <target name="dist" depends="compile" description="generate the distribution">
     <mkdir dir="${dist}"/>
     <jar jarfile="${dist}/jsplitpkgscan-${DSTAMP}.jar" basedir="${build}">
-      <fileset dir="${build}"/>
       <fileset dir="${src}/main/resources"/>
     </jar>
   </target>
