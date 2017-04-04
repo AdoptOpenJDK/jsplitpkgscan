@@ -39,6 +39,14 @@ After the build was sucessful you can now start it using:
 java -p build/libs -m jsplitpkg
 ----
 
+== Create DOT graphic
+To get a PNG graphic for any .DOT file output you could use:
+
+[source, bash]
+----
+dot -Tpng summary.dot -O -Gratio=0.5
+----
+
 == Contribute
 Contributions are always welcome.
 
