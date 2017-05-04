@@ -264,6 +264,8 @@ class JsplitpgkscanTask {
                 log.println(element.getKey()); // the package name
                 element.getValue().stream()
                         .map(Library::location)
+                        .distinct()
+                        .sorted()
                         .forEach(location -> log.format("    %s%n", location));
             });
         }
