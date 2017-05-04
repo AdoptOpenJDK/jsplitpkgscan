@@ -192,7 +192,7 @@ class JsplitpgkscanTask {
                     if (argIt.hasNext()) {
                         Path libraryDirectory = Paths.get(argIt.next());
                         if (Files.isDirectory(libraryDirectory)) {
-                            try (Stream<Path> list = Files.list(libraryDirectory)) {
+                            try (Stream<Path> list = Files.walk(libraryDirectory)) {
                                 list.forEach(this::addAnalyzer);
                                 continue;
                             } catch (IOException ioe) {
