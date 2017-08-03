@@ -9,21 +9,9 @@ with the Classpath Exception", link="https://github.com/{project-full-path}/blob
 This project contains a proposal for a split package scanner tool http://openjdk.java.net[OpenJDK].
 
 == Build and run
-To build the tool you need to have a actual OpenJDK 9 build that you can get from https://jdk9.java.net[here].
-
-In order to run gradle under the latest JDK 9 preview you need to set up the following environment variable:
-
-[source, bash]
-----
-JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --permit-illegal-access --show-version'
-----
-
-Also add the following line to your `gradle.properties`:
-
-[source, bash]
-----
-org.gradle.jvmargs=-XX:+IgnoreUnrecognizedVMOptions --permit-illegal-access --show-version
-----
+To build the tool you need to have a actual OpenJDK 9 build that you can get from 
+http://jdk.java.net/9[http://jdk.java.net/9]. Make sure that you have at least version
+_jdk-9+180_ installed.
 
 To build use:
 
