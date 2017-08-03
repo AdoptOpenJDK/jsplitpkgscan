@@ -79,6 +79,22 @@ class Library {
         return location;
     }
 
+    @Override
+    public int hashCode() {
+        return location.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (!(obj instanceof  Library)) {
+            return false;
+        }
+        Library other = (Library)obj;
+        return location.equals(other.location);
+    }
+
     /**
      * Walks the given directory and returns all packages.
      *
