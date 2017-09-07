@@ -219,7 +219,6 @@ class JsplitpgkscanTask {
                                 ioe.printStackTrace(log);
                                 throw new BadArgs("err.scanning.dir", libraryDirectory);
                             }
-
                         }
                         throw new BadArgs("err.invalid.path", libraryDirectory);
                     }
