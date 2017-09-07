@@ -29,22 +29,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -88,6 +80,34 @@ class JsplitpgkscanTask {
         @Override
         public boolean showUsage() {
             return showUsage;
+        }
+    }
+
+    class DirectoryEntryVisitor extends SimpleFileVisitor<Path> {
+        private final Path libraryDirectory;
+
+        public DirectoryEntryVisitor(Path libraryDirectory) {
+            this.libraryDirectory = libraryDirectory;
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (!libraryDirectory.equals(dir)) {
+                if (dir.endsWith("WEB-INF/classes")) {
+                    addAnalyzer(dir, libraryDirectory::relativize);
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
+            } else if (dir.endsWith("jar") || dir.endsWith("rar")) {
+                addAnalyzer(dir, libraryDirectory::relativize);
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            addAnalyzer(file, libraryDirectory::relativize);
+            return FileVisitResult.CONTINUE;
         }
     }
 
@@ -178,7 +198,7 @@ class JsplitpgkscanTask {
                             try (Stream<String> lines = Files.lines(libraryDefinitionFile)) {
                                 lines
                                         .map(Paths::get)
-                                        .forEach(this::addAnalyzer);
+                                        .forEach(path -> addAnalyzer(path, Path::getFileName));
                                 continue;
                             } catch (IOException ioe) {
                                 ioe.printStackTrace(log);
@@ -190,15 +210,16 @@ class JsplitpgkscanTask {
                     throw new BadArgs("err.missing.arg", argument);
                 case "-d":
                     if (argIt.hasNext()) {
-                        Path libraryDirectory = Paths.get(argIt.next());
+                        Path libraryDirectory = Paths.get(argIt.next()).toAbsolutePath();
                         if (Files.isDirectory(libraryDirectory)) {
-                            try (Stream<Path> list = Files.walk(libraryDirectory)) {
-                                list.forEach(this::addAnalyzer);
+                            try {
+                                Files.walkFileTree(libraryDirectory, new DirectoryEntryVisitor(libraryDirectory));
                                 continue;
                             } catch (IOException ioe) {
                                 ioe.printStackTrace(log);
                                 throw new BadArgs("err.scanning.dir", libraryDirectory);
                             }
+
                         }
                         throw new BadArgs("err.invalid.path", libraryDirectory);
                     }
@@ -226,7 +247,7 @@ class JsplitpgkscanTask {
                     if (argument.startsWith("-")) {
                         throw new BadArgs("err.unknown.option", argument).showUsage(true);
                     }
-                    addAnalyzer(Paths.get(argument));
+                    addAnalyzer(Paths.get(argument), Path::getFileName);
             }
         }
     }
@@ -309,15 +330,15 @@ class JsplitpgkscanTask {
         }
     }
 
-    private void addAnalyzer(Path path) {
+    private void addAnalyzer(Path path, Function<Path, Path> relativizeFunction) {
         if (Files.exists(path)) {
             try {
                 if (Files.isDirectory(path)) {
-                    options.libraries.add(new Library(path, Library::packages));
+                    options.libraries.add(new Library(path, relativizeFunction, Library::packages));
                 } else {
                     Matcher m = JAR_FILE_PATTERN.matcher(String.valueOf(path.getFileName()));
                     if (m.matches()) {
-                        options.libraries.add(new Library(path, Library::jarFilePackages));
+                        options.libraries.add(new Library(path, relativizeFunction, Library::jarFilePackages));
                     }
                 }
             } catch (IOException e) {
