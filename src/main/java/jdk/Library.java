@@ -51,8 +51,8 @@ class Library {
     private final URI location;
     private final Set<String> packages;
 
-    Library(Path path, Function<Path, Set<String>> pkgFunction) throws IOException {
-        this.location = path.toUri();
+    Library(Path path, Function<Path, Path> relativizeFunction, Function<Path, Set<String>> pkgFunction) throws IOException {
+        this.location = URI.create("file:/" + relativizeFunction.apply(path));
         this.packages = pkgFunction.apply(path);
     }
 
@@ -88,30 +88,30 @@ class Library {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (!(obj instanceof  Library)) {
+        } else if (!(obj instanceof Library)) {
             return false;
         }
-        Library other = (Library)obj;
+        Library other = (Library) obj;
         return location.equals(other.location);
     }
 
     /**
      * Walks the given directory and returns all packages.
-     *
+     * <p>
      * This method needs to be updated to include resources
      * for #ResourceEncapsulation.
      */
     static Set<String> packages(Path dir) {
         try {
             return Files.find(dir, Integer.MAX_VALUE,
-                (p, attr) -> p.getFileName().toString().endsWith(".class") &&
-                    !p.getFileName().toString().equals(MODULE_INFO))
-                .map(Path::getParent)
-                .map(dir::relativize)
-                .map(Path::toString)
-                .map(pathName -> pathName.replace(File.separator, "."))
-                .map(Library::specialCaseTranslator)
-                .collect(Collectors.toSet());
+                    (p, attr) -> p.getFileName().toString().endsWith(".class") &&
+                            !p.getFileName().toString().equals(MODULE_INFO))
+                    .map(Path::getParent)
+                    .map(dir::relativize)
+                    .map(Path::toString)
+                    .map(pathName -> pathName.replace(File.separatorChar, '.'))
+                    .map(Library::specialCaseTranslator)
+                    .collect(Collectors.toSet());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -123,11 +123,11 @@ class Library {
     static Set<String> jarFilePackages(Path path) {
         try (JarFile jf = new JarFile(path.toFile())) {
             return jf.stream()
-                .map(JarEntry::getName)
-                .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
-                .map(Library::toPackage)
-                .map(Library::specialCaseTranslator)
-                .collect(Collectors.toSet());
+                    .map(JarEntry::getName)
+                    .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
+                    .map(Library::toPackage)
+                    .map(Library::specialCaseTranslator)
+                    .collect(Collectors.toSet());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -136,15 +136,15 @@ class Library {
     static Map<String, Library> packageToModule() {
         Map<String, Library> map = new HashMap<>();
         ModuleFinder.ofSystem().findAll()
-            .stream()
-            .map(moduleReference -> new Library(moduleReference))
-            .forEach(library -> library.packages().forEach(packageName -> map.put(packageName, library)));
+                .stream()
+                .map(moduleReference -> new Library(moduleReference))
+                .forEach(library -> library.packages().forEach(packageName -> map.put(packageName, library)));
         return map;
     }
 
     private static String toPackage(String name) {
         int i = name.lastIndexOf('/');
-        return i != -1 ? name.substring(0, i).replace("/", ".") : "";
+        return i != -1 ? name.substring(0, i).replace('/', '.') : "";
     }
 
     private static String specialCaseTranslator(String packageName) {
