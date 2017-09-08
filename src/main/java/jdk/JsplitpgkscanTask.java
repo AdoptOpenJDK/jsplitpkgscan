@@ -255,7 +255,7 @@ class JsplitpgkscanTask {
         Map<String, Library> packageToModule = Library.packageToModule();
         Map<String, List<Library>> packages = new HashMap<>();
         for (Library analyzer : options.libraries) {
-            analyzer.packages().stream()
+            analyzer.packages().keySet().stream()
                     .forEach(packageName -> {
                         List<Library> values =
                                 packages.computeIfAbsent(packageName, key -> new ArrayList<>());
@@ -283,10 +283,9 @@ class JsplitpgkscanTask {
             splitPkgs.forEach(element -> {
                 log.println(element.getKey()); // the package name
                 element.getValue().stream()
-                        .map(Library::location)
                         .distinct()
                         .sorted()
-                        .forEach(location -> log.format("    %s%n", location));
+                        .forEach(library -> log.format("  %5d  %s%n", library.count(element.getKey()), library.location()));
             });
         }
     }
@@ -294,7 +293,7 @@ class JsplitpgkscanTask {
     private void reportAllPackages(Map<String, List<Library>> packages) {
         log.println("- All packages:");
         for (Library analyzer : options.libraries) {
-            List<String> allPkgs = analyzer.packages()
+            List<String> allPkgs = analyzer.packages().keySet()
                     .stream()
                     .filter(element -> element.startsWith(options.packageArg))
                     .sorted()

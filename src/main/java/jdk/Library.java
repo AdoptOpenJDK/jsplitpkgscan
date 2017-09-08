@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -45,20 +44,21 @@ import java.util.stream.Collectors;
  * Lists the packages of the given JAR file or exploded directory
  * and reports the list of split packages
  */
-class Library {
+class Library implements Comparable<Library>{
     private static final String MODULE_INFO = "module-info.class";
+    private static final Long ZERO = Long.valueOf(0); // marks count inside a module, where we do not know the number of classes
 
     private final URI location;
-    private final Set<String> packages;
+    private final Map<String, Long> packages;
 
-    Library(Path path, Function<Path, Path> relativizeFunction, Function<Path, Set<String>> pkgFunction) throws IOException {
+    Library(Path path, Function<Path, Path> relativizeFunction, Function<Path, Map<String, Long>> pkgFunction) throws IOException {
         this.location = URI.create("file:/" + relativizeFunction.apply(path));
         this.packages = pkgFunction.apply(path);
     }
 
     private Library(ModuleReference mref) {
         this.location = mref.location().get();
-        this.packages = mref.descriptor().packages();
+        this.packages = mref.descriptor().packages().stream().collect(Collectors.toMap(Function.identity(), pkg -> ZERO));
     }
 
     /**
@@ -66,7 +66,7 @@ class Library {
      *
      * @return the package names contained in this library
      */
-    Set<String> packages() {
+    Map<String, Long> packages() {
         return packages;
     }
 
@@ -77,6 +77,18 @@ class Library {
      */
     URI location() {
         return location;
+    }
+
+    /**
+     * Returns the number of classes in a given package.
+     * <p>
+     * If the library represents a module, the number is unknown and {@code 0} is returned.
+     *
+     * @param packageName the full name of the package
+     * @return the number of classes in package {@code packageName}
+     */
+    Long count(String packageName){
+        return packages.get(packageName);
     }
 
     @Override
@@ -91,8 +103,13 @@ class Library {
         } else if (!(obj instanceof Library)) {
             return false;
         }
-        Library other = (Library) obj;
-        return location.equals(other.location);
+        Library other = (Library)obj;
+        return compareTo(other) == 0;
+    }
+
+    @Override
+    public int compareTo(Library other) {
+        return location.compareTo(other.location);
     }
 
     /**
@@ -101,17 +118,18 @@ class Library {
      * This method needs to be updated to include resources
      * for #ResourceEncapsulation.
      */
-    static Set<String> packages(Path dir) {
+    static Map<String, Long> packages(Path dir) {
         try {
             return Files.find(dir, Integer.MAX_VALUE,
-                    (p, attr) -> p.getFileName().toString().endsWith(".class") &&
-                            !p.getFileName().toString().equals(MODULE_INFO))
+                (p, attr) -> p.getFileName().toString().endsWith(".class") &&
+                    !p.getFileName().toString().equals(MODULE_INFO))
                     .map(Path::getParent)
                     .map(dir::relativize)
                     .map(Path::toString)
                     .map(pathName -> pathName.replace(File.separatorChar, '.'))
                     .map(Library::specialCaseTranslator)
-                    .collect(Collectors.toSet());
+                    .sorted()
+                    .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -120,14 +138,15 @@ class Library {
     /**
      * Returns all packages of the given JAR file.
      */
-    static Set<String> jarFilePackages(Path path) {
+    static Map<String, Long> jarFilePackages(Path path) {
         try (JarFile jf = new JarFile(path.toFile())) {
             return jf.stream()
                     .map(JarEntry::getName)
                     .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
                     .map(Library::toPackage)
                     .map(Library::specialCaseTranslator)
-                    .collect(Collectors.toSet());
+                    .sorted()
+                    .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -137,8 +156,8 @@ class Library {
         Map<String, Library> map = new HashMap<>();
         ModuleFinder.ofSystem().findAll()
                 .stream()
-                .map(moduleReference -> new Library(moduleReference))
-                .forEach(library -> library.packages().forEach(packageName -> map.put(packageName, library)));
+                .map(Library::new)
+                .forEach(library -> library.packages().forEach((packageName, count) -> map.put(packageName, library)));
         return map;
     }
 
