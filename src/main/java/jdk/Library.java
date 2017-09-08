@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -45,20 +44,21 @@ import java.util.stream.Collectors;
  * Lists the packages of the given JAR file or exploded directory
  * and reports the list of split packages
  */
-class Library {
+class Library implements Comparable<Library>{
     private static final String MODULE_INFO = "module-info.class";
+    public static final Long ZERO = Long.valueOf(0);
 
     private final URI location;
-    private final Set<String> packages;
+    private final Map<String, Long> packages;
 
-    Library(Path path, Function<Path, Set<String>> pkgFunction) throws IOException {
+    Library(Path path, Function<Path, Map<String, Long>> pkgFunction) throws IOException {
         this.location = path.toUri();
         this.packages = pkgFunction.apply(path);
     }
 
     private Library(ModuleReference mref) {
         this.location = mref.location().get();
-        this.packages = mref.descriptor().packages();
+        this.packages = mref.descriptor().packages().stream().collect(Collectors.toMap(Function.identity(), pkg -> ZERO));
     }
 
     /**
@@ -66,7 +66,7 @@ class Library {
      *
      * @return the package names contained in this library
      */
-    Set<String> packages() {
+    Map<String, Long> packages() {
         return packages;
     }
 
@@ -77,6 +77,11 @@ class Library {
      */
     URI location() {
         return location;
+    }
+
+
+    Long count(String packageName){
+        return packages.get(packageName);
     }
 
     @Override
@@ -92,7 +97,7 @@ class Library {
             return false;
         }
         Library other = (Library)obj;
-        return location.equals(other.location);
+        return compareTo(other)==0;
     }
 
     /**
@@ -101,7 +106,7 @@ class Library {
      * This method needs to be updated to include resources
      * for #ResourceEncapsulation.
      */
-    static Set<String> packages(Path dir) {
+    static Map<String, Long> packages(Path dir) {
         try {
             return Files.find(dir, Integer.MAX_VALUE,
                 (p, attr) -> p.getFileName().toString().endsWith(".class") &&
@@ -111,7 +116,8 @@ class Library {
                 .map(Path::toString)
                 .map(pathName -> pathName.replace(File.separator, "."))
                 .map(Library::specialCaseTranslator)
-                .collect(Collectors.toSet());
+                .sorted()
+                .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -120,15 +126,16 @@ class Library {
     /**
      * Returns all packages of the given JAR file.
      */
-    static Set<String> jarFilePackages(Path path) {
+    static Map<String, Long> jarFilePackages(Path path) {
         try (JarFile jf = new JarFile(path.toFile())) {
             return jf.stream()
                 .map(JarEntry::getName)
                 .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
                 .map(Library::toPackage)
                 .map(Library::specialCaseTranslator)
-                .collect(Collectors.toSet());
-        } catch (IOException e) {
+                .sorted()
+                .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
+         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -138,7 +145,7 @@ class Library {
         ModuleFinder.ofSystem().findAll()
             .stream()
             .map(moduleReference -> new Library(moduleReference))
-            .forEach(library -> library.packages().forEach(packageName -> map.put(packageName, library)));
+            .forEach(library -> library.packages().forEach((packageName, count) -> map.put(packageName, library)));
         return map;
     }
 
@@ -152,5 +159,10 @@ class Library {
             return packageName.substring(16);
         }
         return packageName;
+    }
+
+    @Override
+    public int compareTo(Library o) {
+        return location.compareTo(o.location);
     }
 }
