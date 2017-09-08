@@ -126,7 +126,7 @@ class Library implements Comparable<Library>{
                     .map(Path::getParent)
                     .map(dir::relativize)
                     .map(Path::toString)
-                    .map(pathName -> pathName.replace(File.separator, "."))
+                    .map(pathName -> pathName.replace(File.separatorChar, '.'))
                     .map(Library::specialCaseTranslator)
                     .sorted()
                     .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
