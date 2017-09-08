@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 class Library implements Comparable<Library>{
     private static final String MODULE_INFO = "module-info.class";
-    public static final Long ZERO = Long.valueOf(0);
+    private static final Long ZERO = Long.valueOf(0); // marks count inside a module, where we do not know the number of classes
 
     private final URI location;
     private final Map<String, Long> packages;
@@ -79,7 +79,14 @@ class Library implements Comparable<Library>{
         return location;
     }
 
-
+    /**
+     * Returns the number of classes in a given package.
+     * <p>
+     * If the library represents a module, the number is unknown and {@code 0} is returned.
+     *
+     * @param packageName the full name of the package
+     * @return the number of classes in package {@code packageName}
+     */
     Long count(String packageName){
         return packages.get(packageName);
     }
@@ -98,6 +105,11 @@ class Library implements Comparable<Library>{
         }
         Library other = (Library)obj;
         return compareTo(other) == 0;
+    }
+
+    @Override
+    public int compareTo(Library other) {
+        return location.compareTo(other.location);
     }
 
     /**
@@ -144,7 +156,7 @@ class Library implements Comparable<Library>{
         Map<String, Library> map = new HashMap<>();
         ModuleFinder.ofSystem().findAll()
                 .stream()
-                .map(moduleReference -> new Library(moduleReference))
+                .map(Library::new)
                 .forEach(library -> library.packages().forEach((packageName, count) -> map.put(packageName, library)));
         return map;
     }
@@ -159,10 +171,5 @@ class Library implements Comparable<Library>{
             return packageName.substring(16);
         }
         return packageName;
-    }
-
-    @Override
-    public int compareTo(Library o) {
-        return location.compareTo(o.location);
     }
 }
