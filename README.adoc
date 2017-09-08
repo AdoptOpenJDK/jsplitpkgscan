@@ -11,7 +11,7 @@ with the Classpath Exception", link="https://github.com/{project-full-path}/blob
 This project contains a proposal for a split package scanner tool http://openjdk.java.net[OpenJDK].
 
 == Build and run
-To build the tool you need to have a actual OpenJDK 9 build that you can get from 
+To build the tool you need to have a actual _JDK_ build (OpenJDK or Oracle) that you can get from 
 {jdk-url}[{jdk-url}]. Make sure that you have at least version _{jdk-version}_ installed.
 
 To build use:
