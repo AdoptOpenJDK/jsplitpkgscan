@@ -51,8 +51,8 @@ class Library implements Comparable<Library>{
     private final URI location;
     private final Map<String, Long> packages;
 
-    Library(Path path, Function<Path, Map<String, Long>> pkgFunction) throws IOException {
-        this.location = path.toUri();
+    Library(Path path, Function<Path, Path> relativizeFunction, Function<Path, Map<String, Long>> pkgFunction) throws IOException {
+        this.location = URI.create("file:/" + relativizeFunction.apply(path));
         this.packages = pkgFunction.apply(path);
     }
 
@@ -93,16 +93,16 @@ class Library implements Comparable<Library>{
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (!(obj instanceof  Library)) {
+        } else if (!(obj instanceof Library)) {
             return false;
         }
         Library other = (Library)obj;
-        return compareTo(other)==0;
+        return compareTo(other) == 0;
     }
 
     /**
      * Walks the given directory and returns all packages.
-     *
+     * <p>
      * This method needs to be updated to include resources
      * for #ResourceEncapsulation.
      */
@@ -111,13 +111,13 @@ class Library implements Comparable<Library>{
             return Files.find(dir, Integer.MAX_VALUE,
                 (p, attr) -> p.getFileName().toString().endsWith(".class") &&
                     !p.getFileName().toString().equals(MODULE_INFO))
-                .map(Path::getParent)
-                .map(dir::relativize)
-                .map(Path::toString)
-                .map(pathName -> pathName.replace(File.separator, "."))
-                .map(Library::specialCaseTranslator)
-                .sorted()
-                .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
+                    .map(Path::getParent)
+                    .map(dir::relativize)
+                    .map(Path::toString)
+                    .map(pathName -> pathName.replace(File.separator, "."))
+                    .map(Library::specialCaseTranslator)
+                    .sorted()
+                    .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -129,13 +129,13 @@ class Library implements Comparable<Library>{
     static Map<String, Long> jarFilePackages(Path path) {
         try (JarFile jf = new JarFile(path.toFile())) {
             return jf.stream()
-                .map(JarEntry::getName)
-                .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
-                .map(Library::toPackage)
-                .map(Library::specialCaseTranslator)
-                .sorted()
-                .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
-         } catch (IOException e) {
+                    .map(JarEntry::getName)
+                    .filter(entryName -> entryName.endsWith(".class") && !entryName.equals(MODULE_INFO))
+                    .map(Library::toPackage)
+                    .map(Library::specialCaseTranslator)
+                    .sorted()
+                    .collect(Collectors.groupingBy(pkg -> pkg, Collectors.counting()));
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -143,15 +143,15 @@ class Library implements Comparable<Library>{
     static Map<String, Library> packageToModule() {
         Map<String, Library> map = new HashMap<>();
         ModuleFinder.ofSystem().findAll()
-            .stream()
-            .map(moduleReference -> new Library(moduleReference))
-            .forEach(library -> library.packages().forEach((packageName, count) -> map.put(packageName, library)));
+                .stream()
+                .map(moduleReference -> new Library(moduleReference))
+                .forEach(library -> library.packages().forEach((packageName, count) -> map.put(packageName, library)));
         return map;
     }
 
     private static String toPackage(String name) {
         int i = name.lastIndexOf('/');
-        return i != -1 ? name.substring(0, i).replace("/", ".") : "";
+        return i != -1 ? name.substring(0, i).replace('/', '.') : "";
     }
 
     private static String specialCaseTranslator(String packageName) {
