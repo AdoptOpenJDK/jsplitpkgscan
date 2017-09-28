@@ -52,7 +52,8 @@ class Library implements Comparable<Library>{
     private final Map<String, Long> packages;
 
     Library(Path path, Function<Path, Path> relativizeFunction, Function<Path, Map<String, Long>> pkgFunction) throws IOException {
-        this.location = URI.create("file:/" + relativizeFunction.apply(path));
+        String relativePath = relativizeFunction.apply(path).toString().replace("\\", "/");
+        this.location = URI.create("file:/" + relativePath);
         this.packages = pkgFunction.apply(path);
     }
 
