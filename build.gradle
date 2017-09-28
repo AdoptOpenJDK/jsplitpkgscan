@@ -5,8 +5,14 @@ mainClassName = 'jdk.Main'
 sourceCompatibility = 9
 targetCompatibility = 9
 
-jar.manifest {
-    attributes 'Main-Class' : mainClassName
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+        metaInf {
+            from file('.')
+            include 'LICENSE'
+        }
+    }
 }
 
 jar.doLast {
