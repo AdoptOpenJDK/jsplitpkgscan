@@ -1,15 +1,25 @@
-= OpenJDK proposals
+= OpenJDK split package scanner
 Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
 :project-full-path: reinhapa/jsplitpkgscan
 :github-branch: master
+:jdk-version: jdk-9+181
+:jdk-url: http://jdk.java.net/9
 
 image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2,
 with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
 
-This project contains a proposal for a split package scanner tool http://openjdk.java.net[OpenJDK].
+This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
+
+The diving force starting this tool was the lack of tooling to prepare existing class path based modules
+for later migration to modules. For split packages with the current JDK, they will be shown by the `jdeps`
+tool as of today, but not class path based modules so far.
+
+The `jsplitpgkscan` utility will search for split packages within all given `.jar` files and the modules
+known to the JDK itself and report them.
 
 == Build and run
-To build the tool you need to have a actual OpenJDK 9 build that you can get from https://jdk9.java.net[here].
+To build the tool you need to have a actual _JDK_ build (OpenJDK or Oracle) that you can get from 
+{jdk-url}[{jdk-url}]. Make sure that you have at least version _{jdk-version}_ installed.
 
 To build use:
 
@@ -23,6 +33,21 @@ After the build was sucessful you can now start it using:
 [source, bash]
 ----
 java -p build/libs -m jsplitpkg
+----
+
+== Create DOT graphic
+To get a PNG graphic for any .DOT file output for directed graphs you could use:
+
+[source, bash]
+----
+dot -Tpng summary.dot -O -Gratio=0.5
+----
+
+If your experience problems due undirected graphs you could also use this command:
+ 
+[source, bash]
+----
+twopi -Tpng summary.dot -O -Gratio=0.5 -Goverlap=false
 ----
 
 == Contribute
