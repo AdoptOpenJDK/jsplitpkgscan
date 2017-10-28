@@ -1,13 +1,18 @@
-apply plugin: 'application'
-apply plugin: 'java'
+plugins {
+    id 'java-library'
+    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'  
+}
 
-mainClassName = 'jdk.Main'
+ext.mainClassName = 'jdk.Main'
+javaModule.name = 'jsplitpkg'
+
 sourceCompatibility = 9
 targetCompatibility = 9
 
 jar {
     manifest {
         attributes 'Main-Class': mainClassName
+        attributes 'Automatic-Module-Name': 'jsplitpkg'
         metaInf {
             from file('.')
             include 'LICENSE'
