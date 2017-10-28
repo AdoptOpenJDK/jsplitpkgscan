@@ -11,11 +11,11 @@ with the Classpath Exception", link="https://github.com/{project-full-path}/blob
 This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
 
 The diving force starting this tool was the lack of tooling to prepare existing class path based modules
-for later migration to modules. For split packages with the current JDK, they will be shown by the `jdeps`
+for later migration to modules. For split packages with the current _JDK_, they will be shown by the `jdeps`
 tool as of today, but not class path based modules so far.
 
 The `jsplitpgkscan` utility will search for split packages within all given `.jar` files and the modules
-known to the JDK itself and report them.
+known to the _JDK_ itself and report them.
 
 == Build and run
 To build the tool you need to have a actual _JDK_ build (OpenJDK or Oracle) that you can get from 
@@ -35,8 +35,16 @@ After the build was sucessful you can now start it using:
 java -p build/libs -m jsplitpkg
 ----
 
+In order to create your own distribution using jlink you can enter the following command
+if you have `JAVA_HOME` set:
+
+[source, bash]
+----
+$JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkg --launcher jsplitpkg=jsplitpkg --output /tmp/jsplitpkg
+----
+
 == Create DOT graphic
-To get a PNG graphic for any .DOT file output for directed graphs you could use:
+To get a `.png` graphic for any `.dot` file output for directed graphs you could use:
 
 [source, bash]
 ----
