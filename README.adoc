@@ -40,7 +40,8 @@ if you have `JAVA_HOME` set:
 
 [source, bash]
 ----
-$JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkg --launcher jsplitpkg=jsplitpkg --output /tmp/jsplitpkg
+$JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkg \
+  --launcher jsplitpkg=jsplitpkg --output /tmp/jsplitpkg
 ----
 
 == Create DOT graphic
