@@ -35,6 +35,25 @@ After the build was sucessful you can now start it using:
 java -p build/libs -m jsplitpkg
 ----
 
+The usage is as follows
+[source]
+----
+Usage: jsplitpkgscan <options> <path ...>]
+<path> can be a pathname to a JAR/WAR/RAR file or exploded JAR/WAR/RAR file.
+Possible options include:
+  -h -? --help                  Print this usage message
+  -a                            Report all packages for each found JAR/RAR/WAR
+                                file or exploded directory
+  -d <directory>                Directory containing JAR/RAR/WAR files or
+                                exploded directories to scan
+                                (scans subdirectories as well)
+  -f <file>                     File containing a list of JAR/RAR/WAR files
+                                or exploded directories to scan
+  -p <package prefix>           Package prefix to report only split packages
+                                that matches this prefix
+  --dot-output <dir>            Destination directory for DOT file output
+----
+
 In order to create your own distribution using jlink you can enter the following command
 if you have `JAVA_HOME` set:
 
@@ -43,6 +62,16 @@ if you have `JAVA_HOME` set:
 $JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkg \
   --launcher jsplitpkg=jsplitpkg --output /tmp/jsplitpkg
 ----
+
+For using the tool from inside you're code, you can access it looking it up a an
+`java.util.spi.ToolProvider` implementation as follows:
+
+[source, java]
+----
+int rc = ToolProvider.findFirst("jsplitpgkscan")
+                     .ifPresent(tool -> tool.run(System.out, System.err, "-h")
+----
+
 
 == Create DOT graphic
 To get a `.png` graphic for any `.dot` file output for directed graphs you could use:
