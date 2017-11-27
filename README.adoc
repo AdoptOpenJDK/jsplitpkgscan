@@ -7,15 +7,17 @@ Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
 
 image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2,
 with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
+image:https://img.shields.io/badge/Java-9-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
+image:https://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
 
 This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
 
 The diving force starting this tool was the lack of tooling to prepare existing class path based modules
-for later migration to modules. For split packages with the current JDK, they will be shown by the `jdeps`
+for later migration to modules. For split packages with the current _JDK_, they will be shown by the `jdeps`
 tool as of today, but not class path based modules so far.
 
 The `jsplitpgkscan` utility will search for split packages within all given `.jar` files and the modules
-known to the JDK itself and report them.
+known to the _JDK_ itself and report them.
 
 == Build and run
 To build the tool you need to have a actual _JDK_ build (OpenJDK or Oracle) that you can get from 
@@ -35,8 +37,46 @@ After the build was sucessful you can now start it using:
 java -p build/libs -m jsplitpkg
 ----
 
+The usage is as follows
+[source]
+----
+Usage: jsplitpkgscan <options> <path ...>]
+<path> can be a pathname to a JAR/WAR/RAR file or exploded JAR/WAR/RAR file.
+Possible options include:
+  -h -? --help                  Print this usage message
+  -a                            Report all packages for each found JAR/RAR/WAR
+                                file or exploded directory
+  -d <directory>                Directory containing JAR/RAR/WAR files or
+                                exploded directories to scan
+                                (scans subdirectories as well)
+  -f <file>                     File containing a list of JAR/RAR/WAR files
+                                or exploded directories to scan
+  -p <package prefix>           Package prefix to report only split packages
+                                that matches this prefix
+  --dot-output <dir>            Destination directory for DOT file output
+----
+
+In order to create your own distribution using jlink you can enter the following command
+if you have `JAVA_HOME` set:
+
+[source, bash]
+----
+$JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkg \
+  --launcher jsplitpkg=jsplitpkg --output /tmp/jsplitpkg
+----
+
+For using the tool from inside you're code, you can access it looking it up a an
+`java.util.spi.ToolProvider` implementation as follows:
+
+[source, java]
+----
+int rc = ToolProvider.findFirst("jsplitpgkscan")
+                     .ifPresent(tool -> tool.run(System.out, System.err, "-h")
+----
+
+
 == Create DOT graphic
-To get a PNG graphic for any .DOT file output for directed graphs you could use:
+To get a `.png` graphic for any `.dot` file output for directed graphs you could use:
 
 [source, bash]
 ----
