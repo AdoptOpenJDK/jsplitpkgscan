@@ -25,10 +25,18 @@
 
 package jdk;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Set;
 import java.util.spi.ToolProvider;
+import javax.lang.model.SourceVersion;
+import javax.tools.Tool;
 
 public class Main {
+    private static final String jsplitpgkscan = "jsplitpgkscan";
 
     /**
      * Default main entry point used as main class. At the end of the analyzing
@@ -56,15 +64,43 @@ public class Main {
     }
 
 
-    public static class JsplitpgkscanToolsProvider implements ToolProvider {
+    public static class JsplitpgkscanToolProvider implements ToolProvider {
         @Override
         public String name() {
-            return "jsplitpgkscan";
+            return jsplitpgkscan;
         }
 
         @Override
         public int run(PrintWriter out, PrintWriter err, String... arguments) {
             return Main.run(arguments, out);
         }
+
+        @Override
+        public String toString() {
+            return jsplitpgkscan;
+        }
+    }
+
+    public static class JsplitpgkscanTool implements Tool {
+        @Override
+        public String name() {
+            return jsplitpgkscan;
+        }
+
+        @Override
+        public int run(InputStream in, OutputStream out, OutputStream err, String... arguments) {
+            return Main.run(arguments, new PrintWriter(out));
+        }
+
+        @Override
+        public Set<SourceVersion> getSourceVersions() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public String toString() {
+            return jsplitpgkscan;
+        }
     }
 }
+
