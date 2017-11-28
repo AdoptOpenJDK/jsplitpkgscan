@@ -39,11 +39,13 @@ jar.doLast {
 
 task sourcesJar(type: Jar) {
     classifier 'sources'
+    destinationDir file("${project.buildDir}/libs_other")
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier 'javadoc'
+    destinationDir file("${project.buildDir}/libs_other")
     from javadoc.destinationDir
 }
 
