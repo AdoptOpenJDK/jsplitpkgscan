@@ -1,7 +1,11 @@
 plugins {
     id 'java-library'
+    id 'signing'
+    id 'maven'
     id 'org.gradle.java.experimental-jigsaw' version '0.1.1'  
 }
+
+group = 'net.adoptopenjdk'
 
 ext.mainClassName = 'jdk.Main'
 javaModule.name = 'jsplitpkg'
@@ -11,8 +15,8 @@ targetCompatibility = 9
 
 jar {
     manifest {
-        attributes 'Main-Class': mainClassName
-        attributes 'Automatic-Module-Name': 'jsplitpkg'
+        attributes 'Main-Class': mainClassName,
+                   'Automatic-Module-Name': 'jsplitpkg'
         metaInf {
             from file('.')
             include 'LICENSE'
@@ -31,4 +35,73 @@ jar.doLast {
                          '--file',
                          jar.archivePath
     jarTask.execute()
+}
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+signing {
+    required { project.hasProperty('signing.password') && !project.version.contains('-SNAPSHOT') }
+    sign configurations.archives
+}
+
+uploadArchives {
+    if (!project.hasProperty('signing.password')) {
+        println "no archives will be uploaded due missing signing password"
+        return
+    }
+    repositories.mavenDeployer {
+        beforeDeployment { 
+            MavenDeployment deployment -> signing.signPom(deployment)
+        }
+
+        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+
+        snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+
+        pom.project {
+            name 'Split package scanner'
+            packaging 'jar'
+            description 'Tool to scan existing JAR/WAR files for split packages'
+            url 'https://github.com/AdoptOpenJDK/jsplitpkg'
+            
+            scm {
+                connection 'scm:git://github.com/AdoptOpenJDK/jsplitpkg.git'
+                developerConnection 'scm:git://github.com/AdoptOpenJDK/jsplitpkg.git'
+                url 'https://github.com/AdoptOpenJDK/jsplitpkg'
+            }
+
+            licenses {
+                license {
+                    name 'GNU General Public License, version 2, with the Classpath Exception'
+                    url 'http://openjdk.java.net/legal/gplv2+ce.html'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'reinhapa'
+                    name 'Patrick Reinhart'
+                    email 'patrick@reini.net'
+                }
+            }
+        }
+    }
 }
