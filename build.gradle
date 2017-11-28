@@ -8,7 +8,7 @@ plugins {
 group = 'net.adoptopenjdk'
 
 ext.mainClassName = 'jdk.Main'
-javaModule.name = 'jsplitpkg'
+javaModule.name = 'jsplitpkgscan'
 
 sourceCompatibility = 9
 targetCompatibility = 9
@@ -16,7 +16,7 @@ targetCompatibility = 9
 jar {
     manifest {
         attributes 'Main-Class': mainClassName,
-                   'Automatic-Module-Name': 'jsplitpkg'
+                   'Automatic-Module-Name': 'jsplitpkgscan'
         metaInf {
             from file('.')
             include 'LICENSE'
@@ -79,12 +79,12 @@ uploadArchives {
             name 'Split package scanner'
             packaging 'jar'
             description 'Tool to scan existing JAR/WAR files for split packages'
-            url 'https://github.com/AdoptOpenJDK/jsplitpkg'
+            url 'https://github.com/AdoptOpenJDK/jsplitpkgscan'
             
             scm {
-                connection 'scm:git://github.com/AdoptOpenJDK/jsplitpkg.git'
-                developerConnection 'scm:git://github.com/AdoptOpenJDK/jsplitpkg.git'
-                url 'https://github.com/AdoptOpenJDK/jsplitpkg'
+                connection 'scm:git://github.com/AdoptOpenJDK/jsplitpkgscan.git'
+                developerConnection 'scm:git://github.com/AdoptOpenJDK/jsplitpkgscan.git'
+                url 'https://github.com/AdoptOpenJDK/jsplitpkgscan'
             }
 
             licenses {

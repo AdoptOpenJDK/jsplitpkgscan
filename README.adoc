@@ -34,7 +34,7 @@ After the build was sucessful you can now start it using:
 
 [source, bash]
 ----
-java -p build/libs -m jsplitpkg
+java -p build/libs -m jsplitpkgscan
 ----
 
 The usage is as follows
@@ -61,8 +61,8 @@ if you have `JAVA_HOME` set:
 
 [source, bash]
 ----
-$JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkg \
-  --launcher jsplitpkg=jsplitpkg --output /tmp/jsplitpkg
+$JAVA_HOME/bin/jlink --module-path $JAVA_HOME/jmods:build/libs --add-modules jsplitpkgscan \
+  --launcher jsplitpkgscan=jsplitpkgscan --output /tmp/jsplitpkgscan
 ----
 
 For using the tool from inside you're code, you can access it looking it up a an
