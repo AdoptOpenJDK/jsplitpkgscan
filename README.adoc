@@ -1,6 +1,6 @@
 = OpenJDK split package scanner
 Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
-:project-full-path: reinhapa/jsplitpkgscan
+:project-full-path: AdoptOpenJDK/jsplitpkgscan
 :github-branch: master
 :jdk-version: jdk-9+181
 :jdk-url: http://jdk.java.net/9
