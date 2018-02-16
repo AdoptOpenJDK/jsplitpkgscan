@@ -40,11 +40,11 @@ public class Main {
 
     /**
      * Default main entry point used as main class. At the end of the analyzing
-     * run, the {@link System.exit()} is being called.
+     * run, the {@link System#exit(int)} is being called.
      *
      * @param arguments command line arguments
      */
-    public static void main(String... arguments) throws Exception {
+    public static void main(String... arguments) {
         JsplitpgkscanTask task = new JsplitpgkscanTask();
         int rc = task.run(arguments);
         System.exit(rc);
