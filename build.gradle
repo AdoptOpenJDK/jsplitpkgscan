@@ -25,8 +25,8 @@ jar {
 }
 
 jar.doLast {
-	// temporary work around to enable main class
-	// using the jar executable
+    // temporary work around to enable main class
+    // using the jar executable
     Exec jarTask = task(jarTask, type: Exec)
     jarTask.commandLine  System.properties['java.home'] + '/bin/jar',
                          '--update',
