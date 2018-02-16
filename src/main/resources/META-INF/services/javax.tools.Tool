@@ -1,1 +1,1 @@
-jdk.Main.JsplitpgkscanTool
+jdk.Main$JsplitpgkscanTool
