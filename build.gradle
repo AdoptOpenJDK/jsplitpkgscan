@@ -5,7 +5,7 @@ plugins {
     id 'org.gradle.java.experimental-jigsaw' version '0.1.1'  
 }
 
-group = 'net.adoptopenjdk'
+group = 'org.adoptopenjdk'
 
 ext.mainClassName = 'jdk.Main'
 javaModule.name = 'jsplitpkgscan'
@@ -16,7 +16,7 @@ targetCompatibility = 9
 jar {
     manifest {
         attributes 'Main-Class': mainClassName,
-                   'Automatic-Module-Name': 'jsplitpkgscan'
+                   'Automatic-Module-Name': 'org.adoptopenjdk.jsplitpkgscan'
         metaInf {
             from file('.')
             include 'LICENSE'
