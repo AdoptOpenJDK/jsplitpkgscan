@@ -14,9 +14,12 @@ javaModule.name = 'jsplitpkgscan'
 sourceCompatibility = 11
 targetCompatibility = 11
 
+// Uncomment the section below if you want to just ./gradlew install locally
+/*
 repositories {
     mavenLocal()
 }
+*/
 
 jar {
     manifest {
@@ -64,15 +67,17 @@ signing {
     sign configurations.archives
 }
 
+/*
+ * Comment out this whole section if you don't want to upload the artifact on
+ * a ./gradlew install
+ */
 uploadArchives {
-    /*
+
     if (!project.hasProperty('signing.password')) {
         println "no archives will be uploaded due missing signing password"
         return
     }
-    */
 
-    /*
     repositories.mavenDeployer {
         beforeDeployment { 
             MavenDeployment deployment -> signing.signPom(deployment)
@@ -117,5 +122,4 @@ uploadArchives {
             }
         }
     }
-    */
 }
