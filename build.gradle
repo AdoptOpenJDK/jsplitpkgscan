@@ -2,7 +2,8 @@ plugins {
     id 'java-library'
     id 'signing'
     id 'maven'
-    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'  
+    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
+    id "com.github.ben-manes.versions" version "0.20.0"
 }
 
 group = 'org.adoptopenjdk'
@@ -10,8 +11,12 @@ group = 'org.adoptopenjdk'
 ext.mainClassName = 'jdk.Main'
 javaModule.name = 'jsplitpkgscan'
 
-sourceCompatibility = 9
-targetCompatibility = 9
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenLocal()
+}
 
 jar {
     manifest {
@@ -60,10 +65,14 @@ signing {
 }
 
 uploadArchives {
+    /*
     if (!project.hasProperty('signing.password')) {
         println "no archives will be uploaded due missing signing password"
         return
     }
+    */
+
+    /*
     repositories.mavenDeployer {
         beforeDeployment { 
             MavenDeployment deployment -> signing.signPom(deployment)
@@ -108,4 +117,5 @@ uploadArchives {
             }
         }
     }
+    */
 }
