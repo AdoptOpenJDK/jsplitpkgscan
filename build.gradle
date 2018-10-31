@@ -71,10 +71,12 @@ uploadArchives {
 
         repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
             authentication(userName: ossrhUsername, password: ossrhPassword)
+            //proxy(host: '127.0.0.1', port: 3128, type: 'http')
         }
 
         snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
             authentication(userName: ossrhUsername, password: ossrhPassword)
+            //proxy(host: '127.0.0.1', port: 3128, type: 'http')
         }
 
         pom.project {
