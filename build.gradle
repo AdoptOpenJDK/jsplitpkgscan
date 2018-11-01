@@ -35,14 +35,14 @@ jar {
 jar.doLast {
     // temporary work around to enable main class
     // using the jar executable
-    Exec jarTask = task(jarTask, type: Exec)
-    jarTask.commandLine  System.properties['java.home'] + '/bin/jar',
-                         '--update',
-                         '--main-class',
-                         mainClassName,
-                         '--file',
-                         jar.archivePath
-    jarTask.execute()
+    exec {
+        commandLine  System.properties['java.home'] + '/bin/jar',
+                '--update',
+                '--main-class',
+                mainClassName,
+                '--file',
+                jar.archivePath
+    }
 }
 
 task sourcesJar(type: Jar) {
