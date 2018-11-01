@@ -2,7 +2,8 @@ plugins {
     id 'java-library'
     id 'signing'
     id 'maven'
-    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'  
+    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
+    id "com.github.ben-manes.versions" version "0.20.0"
 }
 
 group = 'org.adoptopenjdk'
@@ -10,8 +11,15 @@ group = 'org.adoptopenjdk'
 ext.mainClassName = 'jdk.Main'
 javaModule.name = 'jsplitpkgscan'
 
-sourceCompatibility = 9
-targetCompatibility = 9
+sourceCompatibility = 11
+targetCompatibility = 11
+
+// Uncomment the section below if you want to just ./gradlew install locally
+/*
+repositories {
+    mavenLocal()
+}
+*/
 
 jar {
     manifest {
@@ -25,16 +33,16 @@ jar {
 }
 
 jar.doLast {
-	// temporary work around to enable main class
-	// using the jar executable
-    Exec jarTask = task(jarTask, type: Exec)
-    jarTask.commandLine  System.properties['java.home'] + '/bin/jar',
-                         '--update',
-                         '--main-class',
-                         mainClassName,
-                         '--file',
-                         jar.archivePath
-    jarTask.execute()
+    // temporary work around to enable main class
+    // using the jar executable
+    exec {
+        commandLine  System.properties['java.home'] + '/bin/jar',
+                '--update',
+                '--main-class',
+                mainClassName,
+                '--file',
+                jar.archivePath
+    }
 }
 
 task sourcesJar(type: Jar) {
@@ -59,11 +67,17 @@ signing {
     sign configurations.archives
 }
 
+/*
+ * Comment out this whole section if you don't want to upload the artifact on
+ * a ./gradlew install
+ */
 uploadArchives {
+
     if (!project.hasProperty('signing.password')) {
         println "no archives will be uploaded due missing signing password"
         return
     }
+
     repositories.mavenDeployer {
         beforeDeployment { 
             MavenDeployment deployment -> signing.signPom(deployment)
