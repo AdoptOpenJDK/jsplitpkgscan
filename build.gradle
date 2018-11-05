@@ -109,7 +109,7 @@ publishing {
         }
     }
     repositories {
-        if (!ossrhUsername.isEmpty() && !ossrhPassword.isEmpty()) {
+        if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
             maven {
                 def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
                 def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
