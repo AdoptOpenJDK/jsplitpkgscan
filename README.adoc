@@ -2,12 +2,13 @@
 Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
 :project-full-path: AdoptOpenJDK/jsplitpkgscan
 :github-branch: master
-:jdk-version: jdk-9+181
-:jdk-url: http://jdk.java.net/9
+:jdk-version: 11
+:jdk-url: https://jdk.java.net/{jdk-version}
+:adoptopenjdk-url: https://adoptopenjdk.net
 
 image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2,
 with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
-image:https://img.shields.io/badge/Java-9-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
+image:https://img.shields.io/badge/Java-{jdk-version}-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
 image:https://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
 
 This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
@@ -20,8 +21,9 @@ The `jsplitpgkscan` utility will search for split packages within all given `.ja
 known to the _JDK_ itself and report them.
 
 == Build and run
-To build the tool you need to have a actual _JDK_ build (OpenJDK or Oracle) that you can get from 
-{jdk-url}[{jdk-url}]. Make sure that you have at least version _{jdk-version}_ installed.
+To build the tool you need to have a actual _JDK_ build that you can get from 
+{jdk-url}[{jdk-url}], {adoptopenjdk-url}[{adoptopenjdk-url}] or other providers.
+Make sure that you have at least version _jdk-{jdk-version}_ installed.
 
 To build use:
 
