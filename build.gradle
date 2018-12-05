@@ -1,9 +1,9 @@
 plugins {
     id 'java-library'
     id 'signing'
-    id 'maven'
+    id 'maven-publish'
     id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
-    id "com.github.ben-manes.versions" version "0.20.0"
+    id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
 group = 'org.adoptopenjdk'
@@ -71,53 +71,52 @@ signing {
  * Comment out this whole section if you don't want to upload the artifact on
  * a ./gradlew install
  */
-uploadArchives {
-
-    if (!project.hasProperty('signing.password')) {
-        println "no archives will be uploaded due missing signing password"
-        return
-    }
-
-    repositories.mavenDeployer {
-        beforeDeployment { 
-            MavenDeployment deployment -> signing.signPom(deployment)
-        }
-
-        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-            authentication(userName: ossrhUsername, password: ossrhPassword)
-            //proxy(host: '127.0.0.1', port: 3128, type: 'http')
-        }
-
-        snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-            authentication(userName: ossrhUsername, password: ossrhPassword)
-            //proxy(host: '127.0.0.1', port: 3128, type: 'http')
-        }
-
-        pom.project {
-            name 'Split package scanner'
-            packaging 'jar'
-            description 'Tool to scan existing JAR/WAR files for split packages'
-            url 'https://github.com/AdoptOpenJDK/jsplitpkgscan'
-            
-            scm {
-                connection 'scm:git://github.com/AdoptOpenJDK/jsplitpkgscan.git'
-                developerConnection 'scm:git://github.com/AdoptOpenJDK/jsplitpkgscan.git'
-                url 'https://github.com/AdoptOpenJDK/jsplitpkgscan'
-            }
-
-            licenses {
-                license {
-                    name 'GNU General Public License, version 2, with the Classpath Exception'
-                    url 'http://openjdk.java.net/legal/gplv2+ce.html'
-                    distribution 'repo'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = 'Split package scanner'
+                description = 'Tool to scan existing JAR/WAR files for split packages'
+                url = 'https://github.com/AdoptOpenJDK/jsplitpkgscan'  
+                scm {
+                    connection = 'scm:git://github.com/AdoptOpenJDK/jsplitpkgscan.git'
+                    developerConnection = 'scm:git://github.com/AdoptOpenJDK/jsplitpkgscan.git'
+                    url = 'https://github.com/AdoptOpenJDK/jsplitpkgscan'
+                }
+                licenses {
+                    license {
+                        name = 'GNU General Public License, version 2, with the Classpath Exception'
+                        url = 'http://openjdk.java.net/legal/gplv2+ce.html'
+                        distribution = 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'reinhapa'
+                        name = 'Patrick Reinhart'
+                        email = 'patrick@reini.net'
+                    }
+                    developer {
+                        id = 'ohumbel'
+                        name = 'Otmar Humbel'
+                        email = 'ohumbel@gmail.com'
+                    }
                 }
             }
-
-            developers {
-                developer {
-                    id 'reinhapa'
-                    name 'Patrick Reinhart'
-                    email 'patrick@reini.net'
+        }
+    }
+    repositories {
+        if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+            maven {
+                def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
                 }
             }
         }
