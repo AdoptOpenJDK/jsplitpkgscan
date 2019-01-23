@@ -14,7 +14,7 @@ javaModule.name = 'jsplitpkgscan'
 sourceCompatibility = 11
 targetCompatibility = 11
 
-// Uncomment the section below if you want to just ./gradlew install locally
+// Uncomment the section below if you want to just ./gradlew publishToMavenLocal locally
 /*
 repositories {
     mavenLocal()
