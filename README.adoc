@@ -1,15 +1,17 @@
 = OpenJDK split package scanner
 Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
-:project-full-path: AdoptOpenJDK/jsplitpkgscan
+:project-name: jsplitpkgscan
+:group-name: org.adoptopenjdk
+:project-full-path: AdoptOpenJDK/{project-name}
 :github-branch: master
-:jdk-version: 11
+:jdk-version: 12
 :jdk-url: https://jdk.java.net/{jdk-version}
 :adoptopenjdk-url: https://adoptopenjdk.net
 
-image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2,
-with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
+image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2, with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
 image:https://img.shields.io/badge/Java-{jdk-version}-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
 image:https://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
+image:https://img.shields.io/maven-central/v/{group-name}/{project-name}.svg?label=Maven%20Central["Maven Central", link="https://search.maven.org/search?q=g:%22{group-name}%22%20AND%20a:%22{project-name}%22"]
 
 This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
 
