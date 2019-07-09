@@ -2,8 +2,10 @@ plugins {
     id 'java-library'
     id 'signing'
     id 'maven-publish'
+    id 'com.github.ben-manes.versions' version '0.21.0'
+    id 'net.nemerosa.versioning' version '2.8.2'
     id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
-    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'org.owasp.dependencycheck' version '5.1.0'
 }
 
 group = 'org.adoptopenjdk'
@@ -11,8 +13,8 @@ group = 'org.adoptopenjdk'
 ext.mainClassName = 'jdk.Main'
 javaModule.name = 'jsplitpkgscan'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 12
+targetCompatibility = 12
 
 // Uncomment the section below if you want to just ./gradlew publishToMavenLocal locally
 /*
