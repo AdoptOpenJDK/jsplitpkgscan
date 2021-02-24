@@ -1,20 +1,25 @@
 plugins {
-    id 'java-library'
+    id 'application'
     id 'signing'
     id 'maven-publish'
-    id 'com.github.ben-manes.versions' version '0.21.0'
-    id 'net.nemerosa.versioning' version '2.8.2'
-    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
-    id 'org.owasp.dependencycheck' version '5.1.0'
+    id 'com.github.ben-manes.versions' version '0.36.0'
+    id 'net.nemerosa.versioning' version '2.14.0'
+    id 'org.owasp.dependencycheck' version '6.1.1'
 }
 
 group = 'org.adoptopenjdk'
 
-ext.mainClassName = 'jdk.Main'
-javaModule.name = 'jsplitpkgscan'
+java {
+    modularity.inferModulePath = true
+    sourceCompatibility = JavaVersion.VERSION_11
+    withJavadocJar()
+    withSourcesJar()
+}
 
-sourceCompatibility = 12
-targetCompatibility = 12
+application {
+    mainClass = "jdk.Main"
+    mainModule = "org.adoptopenjdk.jsplitpkgscan"
+}
 
 // Uncomment the section below if you want to just ./gradlew publishToMavenLocal locally
 /*
@@ -25,43 +30,11 @@ repositories {
 
 jar {
     manifest {
-        attributes 'Main-Class': mainClassName,
-                   'Automatic-Module-Name': 'org.adoptopenjdk.jsplitpkgscan'
         metaInf {
             from file('.')
             include 'LICENSE'
         }
     }
-}
-
-jar.doLast {
-    // temporary work around to enable main class
-    // using the jar executable
-    exec {
-        commandLine  System.properties['java.home'] + '/bin/jar',
-                '--update',
-                '--main-class',
-                mainClassName,
-                '--file',
-                jar.archivePath
-    }
-}
-
-task sourcesJar(type: Jar) {
-    classifier 'sources'
-    destinationDir file("${project.buildDir}/libs_other")
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier 'javadoc'
-    destinationDir file("${project.buildDir}/libs_other")
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
 }
 
 signing {
@@ -77,8 +50,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             pom {
                 name = 'Split package scanner'
                 description = 'Tool to scan existing JAR/WAR files for split packages'

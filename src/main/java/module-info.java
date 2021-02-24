@@ -1,4 +1,4 @@
-module jsplitpkgscan {
+module org.adoptopenjdk.jsplitpkgscan {
     requires java.compiler;
     provides java.util.spi.ToolProvider
             with jdk.Main.JsplitpgkscanToolProvider;
