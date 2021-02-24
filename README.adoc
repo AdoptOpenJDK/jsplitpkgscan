@@ -2,15 +2,16 @@
 Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
 :project-name: jsplitpkgscan
 :group-name: org.adoptopenjdk
+:jsplitpkgscan-version: 1.1.0-SNAPSHOT
 :project-full-path: AdoptOpenJDK/{project-name}
 :github-branch: master
-:jdk-version: 12
+:jdk-version: 11
 :jdk-url: https://jdk.java.net/{jdk-version}
 :adoptopenjdk-url: https://adoptopenjdk.net
 
 image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2, with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
 image:https://img.shields.io/badge/Java-{jdk-version}-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
-image:https://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
+image:https://github.com/{project-full-path}/workflows/Java%20CI/badge.svg["Java CI with Gradle", link="https://github.com/{project-full-path}/actions?query=workflow%3ACI"]
 image:https://img.shields.io/maven-central/v/{group-name}/{project-name}.svg?label=Maven%20Central["Maven Central", link="https://search.maven.org/search?q=g:%22{group-name}%22%20AND%20a:%22{project-name}%22"]
 
 This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
@@ -34,11 +35,11 @@ To build use:
 ./gradlew clean build
 ----
 
-After the build was sucessful you can now start it using:
+After the build was successful you can now start it using:
 
-[source, bash]
+[source, bash, subs="attributes"]
 ----
-java -p build/libs -m jsplitpkgscan
+java -p build/libs/jsplitpkgscan-{jsplitpkgscan-version}.jar -m org.adoptopenjdk.jsplitpkgscan
 ----
 
 The usage is as follows
