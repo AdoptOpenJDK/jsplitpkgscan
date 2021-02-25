@@ -23,7 +23,7 @@
  * questions.
  */
 
-package jdk;
+package jdk.jsplitpkgscan;
 
 import java.io.File;
 import java.io.IOException;

@@ -17,8 +17,8 @@ java {
 }
 
 application {
-    mainClass = "jdk.Main"
-    mainModule = "org.adoptopenjdk.jsplitpkgscan"
+    mainClass = "jdk.jsplitpkgscan.Main"
+    mainModule = "jdk.jsplitpkgscan"
 }
 
 // Uncomment the section below if you want to just ./gradlew publishToMavenLocal locally
