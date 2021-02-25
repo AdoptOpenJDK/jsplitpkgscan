@@ -23,11 +23,10 @@
  * questions.
  */
 
-package jdk;
+package jdk.jsplitpkgscan;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Set;

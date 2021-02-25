@@ -11,7 +11,7 @@ Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
 
 image:https://img.shields.io/badge/license-GPL2+CPE-blue.svg["GNU General Public License, version 2, with the Classpath Exception", link="https://github.com/{project-full-path}/blob/{github-branch}/LICENSE"]
 image:https://img.shields.io/badge/Java-{jdk-version}-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
-image:https://github.com/{project-full-path}/workflows/Java%20CI/badge.svg["Java CI with Gradle", link="https://github.com/{project-full-path}/actions?query=workflow%3ACI"]
+image:https://github.com/{project-full-path}/actions/workflows/gradle.yml/badge.svg["Java CI with Gradle", link="https://github.com/{project-full-path}/actions/workflows/gradle.yml"]
 image:https://img.shields.io/maven-central/v/{group-name}/{project-name}.svg?label=Maven%20Central["Maven Central", link="https://search.maven.org/search?q=g:%22{group-name}%22%20AND%20a:%22{project-name}%22"]
 
 This project contains a proposal for http://openjdk.java.net[OpenJDK] split package scanner addition.
@@ -39,7 +39,7 @@ After the build was successful you can now start it using:
 
 [source, bash, subs="attributes"]
 ----
-java -p build/libs/jsplitpkgscan-{jsplitpkgscan-version}.jar -m org.adoptopenjdk.jsplitpkgscan
+java -p build/libs/jsplitpkgscan-{jsplitpkgscan-version}.jar -m jdk.jsplitpkgscan
 ----
 
 The usage is as follows

@@ -23,7 +23,7 @@
  * questions.
  */
 
-package jdk;
+package jdk.jsplitpkgscan;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -130,9 +130,9 @@ class JsplitpgkscanTask {
         static {
             Locale locale = Locale.getDefault();
             try {
-                bundle = ResourceBundle.getBundle("jdk.resources.jsplitpkgscan", locale);
+                bundle = ResourceBundle.getBundle("jdk.jsplitpkgscan.resources.jsplitpkgscan", locale);
             } catch (MissingResourceException e) {
-                throw new InternalError("Cannot find jsplitpkgscan resource bundle for locale " + locale);
+                throw new InternalError("Cannot find jdk.jsplitpkgscan resource bundle for locale " + locale);
             }
         }
     }
